@@ -1,0 +1,14 @@
+# Definition of Done
+
+A backlog item is Done when:
+
+- Code is written
+- Code is reviewed
+- Code is merged
+- Feature works correctly
+- Acceptance criteria met
+- Testable
+- No critical bugs
+- Deployable
+- Documentation updated (if needed)
+- Ready for demo
