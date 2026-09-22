@@ -1,0 +1,9 @@
+# Definition of Ready
+
+A backlog item is Ready when:
+- Clearly described
+- Has user/business value
+- Acceptance criteria defined
+- Dependencies identified
+- Small enough for one sprint
+- Team understands it
