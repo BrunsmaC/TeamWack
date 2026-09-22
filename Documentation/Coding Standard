@@ -1,7 +1,24 @@
-Javascript
-https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Code_style_guide/JavaScript
+Potential Stack
 
-Python
+Frontend
+React + TypeScript
 
-Typescript
-https://google.github.io/styleguide/tsguide.html
+Backend
+Python + FastAPI
+
+Database
+MongoDB
+
+Real-time
+FastAPI WebSockets
+
+Maps / GPS
+Leaflet + OpenStreetMap
+Browser Geolocation API
+
+QR
+html5-qrcode
+
+DevOps
+Docker
+GitHub Actions
