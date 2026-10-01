@@ -129,6 +129,7 @@ function MapIllustration() {
 export default function Home({ explorersThisWeek, onStart }) {
   const [phone, setPhone] = useState("");
   const [gameCode, setGameCode] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -149,10 +150,31 @@ export default function Home({ explorersThisWeek, onStart }) {
             </span>
             Buchunt
           </a>
-          <a href="#hunt-form" className="btn btn-sm btn-onnavy">
+          <a href="#hunt-form" className="btn btn-sm btn-onnavy bh-join">
             Join the hunt <Arrow size={18} />
           </a>
+          <button
+            type="button"
+            className="bh-menu-btn"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2" strokeLinecap="round">
+              {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+          </button>
         </div>
+        {menuOpen && (
+          <nav className="bh-menu" aria-label="Main">
+            <div className="bh-container">
+              <a href="#hunt-form" className="btn btn-sm btn-onnavy" onClick={() => setMenuOpen(false)}>
+                Join the hunt <Arrow size={18} />
+              </a>
+            </div>
+          </nav>
+        )}
       </header>
 
       <main className="bh-container bh-hero">
@@ -200,7 +222,8 @@ export default function Home({ explorersThisWeek, onStart }) {
                     <span>MK</span><span>JL</span><span>AS</span>
                   </span>
                   <p>
-                    <strong>{explorersThisWeek.toLocaleString()}</strong> explorers joined this week
+                    <strong>{explorersThisWeek.toLocaleString()}</strong>
+                    <span>explorers joined this week</span>
                   </p>
                 </div>
               )}

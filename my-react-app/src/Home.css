@@ -116,7 +116,8 @@ body { margin: 0; }
 .bh-actions .btn { flex: 0 0 auto; width: 480px; max-width: 100%; }
 
 .bh-proof { display: flex; align-items: center; gap: 12px; }
-.bh-proof p { margin: 0; max-width: 11rem; font-size: .95rem; line-height: 1.3; }
+.bh-proof p { margin: 0; display: flex; align-items: center; gap: 10px; font-size: .95rem; line-height: 1.3; }
+.bh-proof span { max-width: 7.5rem; }
 .bh-proof strong { font: 700 1.2rem "Bricolage Grotesque", sans-serif; }
 .bh-avatars { display: flex; }
 .bh-avatars span {
@@ -170,14 +171,34 @@ body { margin: 0; }
   font: 700 .8rem "Space Grotesk", sans-serif; letter-spacing: .14em; text-transform: uppercase;
 }
 
+/* ---------- mobile menu ---------- */
+.bh-menu-btn { display: none; padding: 6px; border: 0; background: none; color: #fff; cursor: pointer; }
+.bh-menu { display: none; padding: 8px 0 20px; }
+.bh-menu .btn { width: 100%; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
-  .bh-hero { grid-template-columns: 1fr; padding-block: 48px 40px; }
+  .bh-hero { grid-template-columns: 1fr; gap: 24px; padding-block: 48px 40px; }
+  .bh-copy { text-align: center; }
+  .bh-eyebrow { justify-content: center; }
+  .bh-title { font-size: clamp(3.2rem, 14vw, 5.4rem); }
+  .bh-on { font-size: clamp(3.6rem, 15vw, 6rem); margin-top: 0; transform: rotate(-4deg); transform-origin: center; }
+  .bh-lede { margin: 24px auto 36px; }
+  .bh-form { width: min(100%, 440px); margin-inline: auto; text-align: left; }
+  .bh-actions { flex-direction: column; align-items: stretch; gap: 22px; margin-top: 4px; }
+  .bh-actions .btn { width: 100%; max-width: none; }
+  .bh-proof { justify-content: center; }
   .map-stage { margin: 24px auto 0; max-width: 480px; }
-  .bh::before { display: none; }
+  .bh::before { left: -320px; top: 320px; width: 520px; height: 520px; }
+  .bh-foot { justify-content: center; text-align: center; }
+}
+@media (max-width: 640px) {
+  .bh-join { display: none; }
+  .bh-menu-btn { display: block; }
+  .bh-menu { display: block; }
 }
 @media (max-width: 520px) {
-  .bh-brand { font-size: 1.05rem; }
+  .bh-brand { font-size: 1.05rem; gap: 12px; }
   .bh-lede { font-size: 1.1rem; }
   .map-stage { padding-right: 24px; }
   .map-sun { width: 160px; height: 160px; right: -24px; }
