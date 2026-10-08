@@ -1,0 +1,7 @@
+services:
+  website:
+    build: .
+    container_name: teamwack
+    restart: unless-stopped
+    ports:
+      - "8081:80"
