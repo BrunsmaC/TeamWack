@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { getOrCreatePlayerId } from "./player.js";
-import { joinHunt, submitTaskAnswer } from "./api.js";
+import { useState } from "react";
+
+// Sample content for the frontend prototype; no answers are checked or saved.
+const SAMPLE_TASKS = [
+  { id: "clockkeeper", title: "The Clockkeeper", description: "Find the old clock and enter the hour shown on its face.", completed: false },
+  { id: "garden-gate", title: "Hidden Garden Gate", description: "Look for the yellow gate and enter the flower painted above it.", completed: false },
+  { id: "market-motto", title: "Market Motto", description: "Read the market plaque and enter the final word.", completed: false },
+];
 import "./Game.css";
 
 const Arrow = ({ size = 20 }) => (
@@ -106,12 +111,11 @@ function JoinPanel({ initialCode, onJoin, error, loading }) {
   );
 }
 
-function TaskList({ huntId, playerId, tasks, onTasksUpdated }) {
+function TaskList({ tasks }) {
   const [answers, setAnswers] = useState({});
-  const [submittingTask, setSubmittingTask] = useState("");
   const [taskMessages, setTaskMessages] = useState({});
 
-  const submitAnswer = async (event, task) => {
+  const submitAnswer = (event, task) => {
     event.preventDefault();
     const answer = answers[task.id]?.trim();
     if (!answer) {
@@ -119,18 +123,7 @@ function TaskList({ huntId, playerId, tasks, onTasksUpdated }) {
       return;
     }
 
-    setSubmittingTask(task.id);
-    setTaskMessages((messages) => ({ ...messages, [task.id]: "" }));
-    try {
-      const result = await submitTaskAnswer(huntId, task.id, playerId, answer);
-      onTasksUpdated(result.tasks);
-      setAnswers((current) => ({ ...current, [task.id]: "" }));
-      setTaskMessages((messages) => ({ ...messages, [task.id]: result.message }));
-    } catch (error) {
-      setTaskMessages((messages) => ({ ...messages, [task.id]: error.message }));
-    } finally {
-      setSubmittingTask("");
-    }
+    setTaskMessages((messages) => ({ ...messages, [task.id]: "Answer entered. Checking answers will be available when the backend is connected." }));
   };
 
   if (tasks.length === 0) {
@@ -172,9 +165,7 @@ function TaskList({ huntId, playerId, tasks, onTasksUpdated }) {
                       placeholder="Type what you found"
                       onChange={(event) => setAnswers((current) => ({ ...current, [task.id]: event.target.value }))}
                     />
-                    <button type="submit" disabled={submittingTask === task.id}>
-                      {submittingTask === task.id ? "Checking" : "Submit"}
-                    </button>
+                    <button type="submit">Submit</button>
                   </div>
                 </form>
               )}
@@ -193,40 +184,16 @@ function TaskList({ huntId, playerId, tasks, onTasksUpdated }) {
 }
 
 export default function Game() {
-  const query = useMemo(() => new URLSearchParams(window.location.search), []);
-  const initialCode = query.get("code") ?? "";
-  const initialPlayer = query.get("player") ?? getOrCreatePlayerId();
+  const initialCode = new URLSearchParams(window.location.search).get("code") ?? "";
   const [accessCode, setAccessCode] = useState(initialCode);
-  const [playerId] = useState(initialPlayer);
-  const [hunt, setHunt] = useState(null);
-  const [tasks, setTasks] = useState([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [hunt, setHunt] = useState(initialCode ? { hunt_name: "Old Town Secrets", access_code: initialCode } : null);
+  const tasks = SAMPLE_TASKS;
 
-  const join = useCallback(async (code) => {
-    setLoading(true);
-    setError("");
-    try {
-      const result = await joinHunt(code, playerId);
-      setHunt(result);
-      setTasks(result.tasks);
-      setAccessCode(result.access_code);
-      window.history.replaceState({}, "", `/game?code=${encodeURIComponent(result.access_code)}&player=${encodeURIComponent(playerId)}`);
-    } catch (joinError) {
-      setHunt(null);
-      setTasks([]);
-      setError(joinError.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [playerId]);
-
-  // oxlint-disable-next-line react-hooks/exhaustive-deps, react/set-state-in-effect
-  useEffect(() => {
-    if (initialCode) {
-      join(initialCode);
-    }
-  }, [initialCode, join]);
+  const join = (code) => {
+    setAccessCode(code);
+    setHunt({ hunt_name: "Old Town Secrets", access_code: code });
+    window.history.replaceState({}, "", `/game?code=${encodeURIComponent(code)}`);
+  };
 
   return (
     <div className="game-shell">
@@ -245,7 +212,7 @@ export default function Game() {
       </header>
 
       {!hunt && (
-        <JoinPanel initialCode={accessCode} onJoin={join} error={error} loading={loading} />
+        <JoinPanel initialCode={accessCode} onJoin={join} />
       )}
 
       {hunt && (
@@ -265,10 +232,7 @@ export default function Game() {
           <div className="game-grid">
             <MockMap tasks={tasks} />
             <TaskList
-              huntId={hunt.hunt_id}
-              playerId={playerId}
               tasks={tasks}
-              onTasksUpdated={setTasks}
             />
           </div>
         </main>

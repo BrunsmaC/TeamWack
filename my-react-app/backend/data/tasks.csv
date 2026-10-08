@@ -1,6 +1,0 @@
-id,hunt_id,title,description,expected_answer,latitude,longitude
-clockkeeper,old-town-secrets,The Clockkeeper,Find the old clock and enter the hour shown on its face.,twelve,42.3601,-71.0589
-garden-gate,old-town-secrets,Hidden Garden Gate,Look for the yellow gate and enter the flower painted above it.,sunflower,42.3605,-71.0597
-market-motto,old-town-secrets,Market Motto,Read the market plaque and enter the final word.,together,42.3597,-71.0578
-library-lion,campus-trail,Library Lion,Find the library statue and enter the animal name.,lion,42.3519,-71.0551
-quad-code,campus-trail,Quad Code,Count the benches around the main quad.,eight,42.3524,-71.0544

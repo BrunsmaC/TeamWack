@@ -5,10 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "api": ".venv\\Scripts\\python.exe -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000",
     "build": "vite build",
     "lint": "oxlint",
-    "test:api": ".venv\\Scripts\\python.exe -m pytest",
     "preview": "vite preview"
   },
   "dependencies": {

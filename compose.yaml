@@ -1,6 +1,6 @@
 services:
   website:
-    build: .
+    build: ./my-react-app
     container_name: teamwack
     restart: unless-stopped
     ports:

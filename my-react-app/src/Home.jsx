@@ -218,7 +218,7 @@ export default function Home({ explorersThisWeek, onStart }) {
           <form id="hunt-form" className="bh-form" onSubmit={handleSubmit}>
             <label htmlFor="phone">Phone number</label>
             <input id="phone" type="tel" inputMode="tel" autoComplete="tel"
-              placeholder="Optional for saving progress" value={phone}
+              placeholder="Optional phone number" value={phone}
               onChange={(e) => setPhone(e.target.value)} />
 
             <label htmlFor="code">Game code</label>
