@@ -130,10 +130,26 @@ export default function Home({ explorersThisWeek, onStart }) {
   const [phone, setPhone] = useState("");
   const [gameCode, setGameCode] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onStart?.({ phone: phone.trim(), gameCode: gameCode.trim() });
+    const code = gameCode.trim();
+    if (!code) {
+      setError("Enter a game code to join.");
+      return;
+    }
+
+    setIsJoining(true);
+    setError("");
+    try {
+      await onStart?.({ phone: phone.trim(), gameCode: code });
+    } catch (joinError) {
+      setError(joinError.message || "Unable to join that hunt.");
+    } finally {
+      setIsJoining(false);
+    }
   };
 
   return (
@@ -200,19 +216,20 @@ export default function Home({ explorersThisWeek, onStart }) {
           </p>
 
           <form id="hunt-form" className="bh-form" onSubmit={handleSubmit}>
-            <label htmlFor="phone">Enter your number to get the hunt link</label>
+            <label htmlFor="phone">Phone number</label>
             <input id="phone" type="tel" inputMode="tel" autoComplete="tel"
-              placeholder="(555) 123-4567" value={phone}
+              placeholder="Optional phone number" value={phone}
               onChange={(e) => setPhone(e.target.value)} />
 
             <label htmlFor="code">Game code</label>
             <input id="code" type="text" autoComplete="off" autoCapitalize="characters"
               placeholder="Enter your game code" value={gameCode}
               onChange={(e) => setGameCode(e.target.value)} />
+            {error && <p className="bh-error" role="alert">{error}</p>}
 
             <div className="bh-actions">
-              <button type="submit" className="btn btn-lg btn-onlight">
-                Start Hunt <Arrow />
+              <button type="submit" className="btn btn-lg btn-onlight" disabled={isJoining}>
+                {isJoining ? "Joining Hunt" : "Start Hunt"} <Arrow />
               </button>
 
               {/* spot for the "explorers joined this week" count */}

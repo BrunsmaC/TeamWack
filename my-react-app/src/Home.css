@@ -112,6 +112,11 @@ body { margin: 0; }
   font: 400 1.15rem "DM Sans", sans-serif; color: var(--navy);
 }
 .bh-form input::placeholder { color: #9aa1b3; }
+.bh-error {
+  margin: -4px 0 16px;
+  color: #b43b45;
+  font-weight: 800;
+}
 .bh-actions { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
 .bh-actions .btn { flex: 0 0 auto; width: 480px; max-width: 100%; }
 
