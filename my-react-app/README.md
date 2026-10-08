@@ -1,16 +1,23 @@
-# React + Vite
+# Buchunt frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React frontend prototype for Sprint 1. The home and game pages run without a backend.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+Enter any nonempty game code to preview the game page, or open `/game` to view the access-code form. The map, task cards, answer forms, and progress display use sample content. Submitting an answer displays a prototype message; answers are not checked and progress is not saved.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Checks
 
-## Expanding the Oxlint configuration
+```bash
+npm run lint
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Docker
+
+From the repository root, run `docker compose up --build` and open `http://localhost:8081`.
