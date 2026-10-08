@@ -1,0 +1,206 @@
+:root {
+  --navy: #16244a;
+  --yellow: #f5c84c;
+  --cream: #fffaf1;
+  --ink-soft: #4a5675;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+
+.bh {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  color: var(--navy);
+  font-family: "DM Sans", system-ui, sans-serif;
+  overflow-x: clip;
+  position: relative;
+}
+/* faint ring behind the copy */
+.bh::before {
+  content: "";
+  position: absolute;
+  left: -520px; top: 360px;
+  width: 760px; height: 760px;
+  border: 1px solid rgba(22, 36, 74, .1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.bh-container { width: min(1180px, 100% - 48px); margin-inline: auto; }
+
+/* ---------- header ---------- */
+.bh-header { background: var(--navy); padding: 18px 0; }
+.bh-header-row { display: flex; align-items: center; justify-content: space-between; }
+.bh-brand {
+  display: flex; align-items: center; gap: 14px;
+  color: #fff; text-decoration: none;
+  font: 700 1.25rem "Space Grotesk", sans-serif;
+  letter-spacing: .14em; text-transform: uppercase;
+}
+.bh-logo {
+  display: grid; place-items: center;
+  width: 38px; height: 38px;
+  border: 2px solid var(--yellow); border-radius: 50%;
+  color: var(--yellow);
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  border: 0; cursor: pointer; text-decoration: none;
+  background: var(--yellow); color: var(--navy);
+  font: 700 1.1rem "Bricolage Grotesque", sans-serif;
+  transition: transform .12s, box-shadow .12s;
+}
+.btn-sm { padding: 12px 18px; font-size: 1rem; }
+.btn-lg { width: 100%; max-width: 360px; padding: 18px 24px; font-size: 1.2rem; }
+.btn-onnavy { box-shadow: 5px 5px 0 var(--cream); }
+.btn-onlight { box-shadow: 6px 6px 0 var(--navy); }
+.btn:hover { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--navy); }
+.btn-onnavy:hover { box-shadow: 2px 2px 0 var(--cream); }
+:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
+.bh-header :focus-visible { outline-color: var(--yellow); }
+
+/* ---------- hero ---------- */
+.bh-hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+  padding-block: 72px 56px;
+  position: relative;
+}
+.bh-eyebrow {
+  display: flex; align-items: center; gap: 12px; margin: 0 0 18px;
+  font: 700 .95rem "Space Grotesk", sans-serif;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--yellow);
+}
+.bh-spark {
+  display: grid; place-items: center;
+  width: 36px; height: 36px; border-radius: 50%; background: var(--yellow);
+}
+.bh-title {
+  margin: 0;
+  font: 800 clamp(3.4rem, 7.6vw, 6.6rem)/1 "Bricolage Grotesque", sans-serif;
+  letter-spacing: -.045em;
+}
+.bh-on {
+  display: block; margin-top: 4px;
+  font: 400 clamp(4.6rem, 10vw, 8.6rem)/1 "Permanent Marker", cursive;
+  letter-spacing: 0; color: var(--yellow);
+  transform: rotate(-4deg); transform-origin: left center;
+}
+.bh-lede {
+  max-width: 34rem; margin: 28px 0 40px;
+  font-size: 1.3rem; line-height: 1.7; color: var(--ink-soft);
+}
+
+/* ---------- form ---------- */
+.bh-form { max-width: 480px; }
+.bh-form label {
+  display: block; margin: 0 0 8px;
+  font: 700 .8rem "Space Grotesk", sans-serif;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.bh-form input {
+  width: 100%; height: 56px; margin-bottom: 16px; padding: 0 18px;
+  border: 1px solid var(--navy); border-radius: 0; background: #fff;
+  font: 400 1.15rem "DM Sans", sans-serif; color: var(--navy);
+}
+.bh-form input::placeholder { color: #9aa1b3; }
+.bh-actions { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
+.bh-actions .btn { flex: 0 0 auto; width: 480px; max-width: 100%; }
+
+.bh-proof { display: flex; align-items: center; gap: 12px; }
+.bh-proof p { margin: 0; display: flex; align-items: center; gap: 10px; font-size: .95rem; line-height: 1.3; }
+.bh-proof span { max-width: 7.5rem; }
+.bh-proof strong { font: 700 1.2rem "Bricolage Grotesque", sans-serif; }
+.bh-avatars { display: flex; }
+.bh-avatars span {
+  display: grid; place-items: center;
+  width: 32px; height: 32px; margin-left: -8px; border-radius: 50%;
+  border: 2px solid var(--cream); background: var(--yellow);
+  font: 700 .62rem "Space Grotesk", sans-serif;
+}
+.bh-avatars span:first-child { margin-left: 0; background: var(--navy); color: #fff; }
+
+/* ---------- map ---------- */
+.map-stage { position: relative; width: 100%; max-width: 560px; margin-left: auto; padding: 8px 40px 90px 0; }
+.map-sun {
+  position: absolute; right: -40px; top: 36%;
+  width: 240px; height: 240px; border-radius: 50%; background: var(--yellow);
+}
+.map-sheet { position: relative; transform: rotate(3deg); }
+.map-sheet::before {
+  content: ""; position: absolute; inset: 0;
+  background: #c9cacd; transform: translate(18px, 18px);
+}
+.map-svg { position: relative; display: block; width: 100%; height: auto; border: 1px solid rgba(22, 36, 74, .5); }
+.map-note {
+  position: absolute; right: -8px; top: -34px; margin: 0;
+  font: 400 1.1rem/1.2 "Permanent Marker", cursive;
+  transform: rotate(5deg); text-transform: uppercase;
+}
+.map-note svg { display: block; margin: 4px 0 0 -4px; }
+
+.clue-card {
+  position: absolute; left: 22%; right: -4px; bottom: 10px;
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 22px; background: #fff;
+  border: 2px solid var(--navy); box-shadow: 8px 8px 0 var(--navy);
+  transform: rotate(-3deg);
+}
+.clue-card > svg { margin-left: auto; flex: none; }
+.clue-icon {
+  display: grid; place-items: center; flex: none;
+  width: 56px; height: 56px; border-radius: 50%; background: var(--yellow);
+}
+.clue-card p { margin: 0; }
+.clue-label { font: 700 .7rem "Space Grotesk", sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--yellow); }
+.clue-title { font: 700 1.3rem "Bricolage Grotesque", sans-serif; }
+.clue-dist { font-size: .9rem; color: var(--ink-soft); }
+
+/* ---------- footer strip ---------- */
+.bh-foot {
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding-block: 28px 32px; border-top: 1px solid rgba(22, 36, 74, .2);
+  font: 700 .8rem "Space Grotesk", sans-serif; letter-spacing: .14em; text-transform: uppercase;
+}
+
+/* ---------- mobile menu ---------- */
+.bh-menu-btn { display: none; padding: 6px; border: 0; background: none; color: #fff; cursor: pointer; }
+.bh-menu { display: none; padding: 8px 0 20px; }
+.bh-menu .btn { width: 100%; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .bh-hero { grid-template-columns: 1fr; gap: 24px; padding-block: 48px 40px; }
+  .bh-copy { text-align: center; }
+  .bh-eyebrow { justify-content: center; }
+  .bh-title { font-size: clamp(3.2rem, 14vw, 5.4rem); }
+  .bh-on { font-size: clamp(3.6rem, 15vw, 6rem); margin-top: 0; transform: rotate(-4deg); transform-origin: center; }
+  .bh-lede { margin: 24px auto 36px; }
+  .bh-form { width: min(100%, 440px); margin-inline: auto; text-align: left; }
+  .bh-actions { flex-direction: column; align-items: stretch; gap: 22px; margin-top: 4px; }
+  .bh-actions .btn { width: 100%; max-width: none; }
+  .bh-proof { justify-content: center; }
+  .map-stage { margin: 24px auto 0; max-width: 480px; }
+  .bh::before { left: -320px; top: 320px; width: 520px; height: 520px; }
+  .bh-foot { justify-content: center; text-align: center; }
+}
+@media (max-width: 640px) {
+  .bh-join { display: none; }
+  .bh-menu-btn { display: block; }
+  .bh-menu { display: block; }
+}
+@media (max-width: 520px) {
+  .bh-brand { font-size: 1.05rem; gap: 12px; }
+  .bh-lede { font-size: 1.1rem; }
+  .map-stage { padding-right: 24px; }
+  .map-sun { width: 160px; height: 160px; right: -24px; }
+  .clue-card { left: 8%; padding: 14px 16px; }
+}
