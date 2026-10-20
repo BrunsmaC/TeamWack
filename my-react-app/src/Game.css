@@ -1,0 +1,375 @@
+:root {
+  --navy: #16244a;
+  --yellow: #f5c84c;
+  --cream: #fffaf1;
+  --green: #2f8f61;
+  --red: #b43b45;
+  --ink-soft: #4a5675;
+}
+
+.game-shell {
+  min-height: 100vh;
+  background: var(--cream);
+  color: var(--navy);
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px max(24px, calc((100vw - 1180px) / 2));
+  background: var(--navy);
+  color: #fff;
+}
+
+.game-brand,
+.game-home-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.game-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font: 700 1.25rem "Space Grotesk", sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.game-logo {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 2px solid var(--yellow);
+  border-radius: 50%;
+  color: var(--yellow);
+}
+
+.game-home-link {
+  font-weight: 800;
+  color: var(--yellow);
+}
+
+.game-entry {
+  width: min(760px, 100% - 40px);
+  margin: 70px auto;
+}
+
+.game-kicker {
+  margin: 0 0 10px;
+  color: var(--yellow);
+  font: 800 .82rem "Space Grotesk", sans-serif;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.game-entry h1,
+.game-summary h1 {
+  margin: 0;
+  font: 800 clamp(2.4rem, 8vw, 5rem)/1 "Bricolage Grotesque", sans-serif;
+}
+
+.game-entry-form {
+  margin-top: 34px;
+}
+
+.game-entry-form label,
+.answer-form label {
+  display: block;
+  margin-bottom: 8px;
+  font: 800 .75rem "Space Grotesk", sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.game-entry-row,
+.answer-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.game-entry-row input,
+.answer-row input {
+  min-width: 0;
+  flex: 1;
+  height: 54px;
+  padding: 0 16px;
+  border: 1px solid var(--navy);
+  border-radius: 0;
+  background: #fff;
+  color: var(--navy);
+  font: 500 1rem "DM Sans", sans-serif;
+}
+
+.game-entry-row button,
+.answer-row button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 124px;
+  border: 0;
+  background: var(--yellow);
+  color: var(--navy);
+  cursor: pointer;
+  font: 800 1rem "Bricolage Grotesque", sans-serif;
+  box-shadow: 4px 4px 0 var(--navy);
+}
+
+.game-entry-row button:disabled,
+.answer-row button:disabled {
+  cursor: wait;
+  opacity: .7;
+}
+
+.game-error {
+  margin: 18px 0 0;
+  color: var(--red);
+  font-weight: 800;
+}
+
+.game-main {
+  width: min(1180px, 100% - 48px);
+  margin: 0 auto;
+  padding: 44px 0 60px;
+}
+
+.game-summary {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.game-summary p {
+  margin: 12px 0 0;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.game-progress {
+  display: grid;
+  min-width: 150px;
+  padding: 18px;
+  border: 2px solid var(--navy);
+  background: #fff;
+  box-shadow: 6px 6px 0 var(--yellow);
+  text-align: center;
+}
+
+.game-progress strong {
+  font: 800 2.8rem/1 "Bricolage Grotesque", sans-serif;
+}
+
+.game-progress span {
+  color: var(--ink-soft);
+  font-size: .95rem;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.game-map {
+  min-width: 0;
+}
+
+.game-map-paper {
+  background: #fff;
+  border: 2px solid var(--navy);
+  box-shadow: 8px 8px 0 var(--navy);
+  transform: rotate(-1deg);
+}
+
+.game-map svg {
+  display: block;
+  width: 100%;
+  min-height: 360px;
+}
+
+.task-panel {
+  min-width: 0;
+}
+
+.task-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.task-heading h2,
+.task-panel h2 {
+  margin: 0;
+  font: 800 2rem/1 "Bricolage Grotesque", sans-serif;
+}
+
+.task-heading span {
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+
+.task-list {
+  display: grid;
+  gap: 14px;
+}
+
+.task-item {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px;
+  border: 2px solid var(--navy);
+  background: #fff;
+}
+
+.task-item.is-complete {
+  background: #f4fbf6;
+}
+
+.task-status {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--navy);
+  font-weight: 900;
+}
+
+.task-item.is-complete .task-status {
+  background: var(--green);
+  color: #fff;
+}
+
+.task-title-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.task-title-row h3 {
+  margin: 0;
+  font: 800 1.2rem/1.2 "Bricolage Grotesque", sans-serif;
+}
+
+.task-body p {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.status-complete,
+.status-open {
+  flex: none;
+  padding: 5px 8px;
+  font-size: .76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.status-complete {
+  background: #dff3e7;
+  color: var(--green);
+}
+
+.status-open {
+  background: #fff3c5;
+  color: #725609;
+}
+
+.answer-form {
+  margin-top: 16px;
+}
+
+.answer-row button {
+  min-width: 102px;
+  box-shadow: none;
+}
+
+.task-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--red);
+  font-weight: 800;
+}
+
+.task-message.success {
+  color: var(--green);
+}
+
+.task-empty {
+  padding: 18px;
+  border: 2px solid var(--navy);
+  background: #fff;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 900px) {
+  .game-main {
+    width: min(100% - 32px, 680px);
+    padding-top: 34px;
+  }
+
+  .game-summary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .game-progress {
+    width: min(100%, 220px);
+  }
+
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .game-header {
+    padding-inline: 16px;
+  }
+
+  .game-brand {
+    font-size: 1.02rem;
+    letter-spacing: .1em;
+  }
+
+  .game-entry {
+    width: min(100% - 32px, 760px);
+    margin-block: 46px;
+  }
+
+  .game-entry-row,
+  .answer-row {
+    flex-direction: column;
+  }
+
+  .game-entry-row button,
+  .answer-row button {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  .task-item {
+    grid-template-columns: 1fr;
+  }
+
+  .task-title-row {
+    flex-direction: column;
+    align-items: start;
+  }
+}
