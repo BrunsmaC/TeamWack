@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 
-// Sample content for the frontend prototype; no answers are checked or saved.
+// Prototype answer key. Production hunts should check answers through the server API.
 const SAMPLE_TASKS = [
-  { id: "clockkeeper", title: "The Clockkeeper", description: "Find the old clock and enter the hour shown on its face.", completed: false },
-  { id: "garden-gate", title: "Hidden Garden Gate", description: "Look for the yellow gate and enter the flower painted above it.", completed: false },
-  { id: "market-motto", title: "Market Motto", description: "Read the market plaque and enter the final word.", completed: false },
+  { id: "clockkeeper", title: "The Clockkeeper", description: "Find the old clock and enter the hour shown on its face.", acceptedAnswers: Array.from({ length: 12 }, (_, index) => String(index + 1)), completed: false },
+  { id: "garden-gate", title: "Hidden Garden Gate", description: "Look for the yellow gate and enter the flower painted above it.", acceptedAnswers: ["rose"], completed: false },
+  { id: "market-motto", title: "Market Motto", description: "Read the market plaque and enter the final word.", acceptedAnswers: ["community"], completed: false },
 ];
 import "./Game.css";
 
@@ -81,6 +82,10 @@ function JoinPanel({ initialCode, onJoin, error, loading }) {
       setValidationError("Enter an access code to join.");
       return;
     }
+    if (code !== HUNT_CODE) {
+      setValidationError(INVALID_CODE_MESSAGE);
+      return;
+    }
     setValidationError("");
     onJoin(code);
   };
@@ -111,7 +116,7 @@ function JoinPanel({ initialCode, onJoin, error, loading }) {
   );
 }
 
-function TaskList({ tasks }) {
+function TaskList({ tasks, onComplete }) {
   const [answers, setAnswers] = useState({});
   const [taskMessages, setTaskMessages] = useState({});
 
@@ -123,7 +128,14 @@ function TaskList({ tasks }) {
       return;
     }
 
-    setTaskMessages((messages) => ({ ...messages, [task.id]: "Answer entered. Checking answers will be available when the backend is connected." }));
+    if (task.completed) return;
+    const normalize = (value) => value.trim().replace(/\s+/g, " ").toLowerCase();
+    const correct = task.acceptedAnswers.some((expected) => normalize(expected) === normalize(answer));
+    setTaskMessages((messages) => ({
+      ...messages,
+      [task.id]: correct ? "Task completed" : "Incorrect answer. Try again.",
+    }));
+    if (correct) onComplete(task.id);
   };
 
   if (tasks.length === 0) {
@@ -163,14 +175,17 @@ function TaskList({ tasks }) {
                       id={`answer-${task.id}`}
                       value={answers[task.id] ?? ""}
                       placeholder="Type what you found"
-                      onChange={(event) => setAnswers((current) => ({ ...current, [task.id]: event.target.value }))}
+                      onChange={(event) => {
+                        setAnswers((current) => ({ ...current, [task.id]: event.target.value }));
+                        setTaskMessages((current) => ({ ...current, [task.id]: "" }));
+                      }}
                     />
                     <button type="submit">Submit</button>
                   </div>
                 </form>
               )}
               {taskMessages[task.id] && (
-                <p className={`task-message ${taskMessages[task.id] === "Task completed" ? "success" : ""}`}>
+                <p role="status" className={`task-message ${taskMessages[task.id] === "Task completed" ? "success" : ""}`}>
                   {taskMessages[task.id] === "Task completed" ? <Check /> : <X />}
                   {taskMessages[task.id]}
                 </p>
@@ -186,10 +201,18 @@ function TaskList({ tasks }) {
 export default function Game() {
   const initialCode = new URLSearchParams(window.location.search).get("code") ?? "";
   const [accessCode, setAccessCode] = useState(initialCode);
-  const [hunt, setHunt] = useState(initialCode ? { hunt_name: "Old Town Secrets", access_code: initialCode } : null);
-  const tasks = SAMPLE_TASKS;
+  const [hunt, setHunt] = useState(initialCode === HUNT_CODE ? { hunt_name: "Old Town Secrets", access_code: initialCode } : null);
+  const [tasks, setTasks] = useState(() => SAMPLE_TASKS.map((task) => ({ ...task })));
+
+  const completeTask = (taskId) => {
+    setTasks((current) => current.map((task) =>
+      task.id === taskId ? { ...task, completed: true } : task
+    ));
+  };
 
   const join = (code) => {
+    if (code !== HUNT_CODE) return;
+    setTasks(SAMPLE_TASKS.map((task) => ({ ...task })));
     setAccessCode(code);
     setHunt({ hunt_name: "Old Town Secrets", access_code: code });
     window.history.replaceState({}, "", `/game?code=${encodeURIComponent(code)}`);
@@ -232,7 +255,9 @@ export default function Game() {
           <div className="game-grid">
             <MockMap tasks={tasks} />
             <TaskList
+              key={hunt.access_code}
               tasks={tasks}
+              onComplete={completeTask}
             />
           </div>
         </main>
