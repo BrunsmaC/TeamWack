@@ -1,12 +1,2 @@
-import Home from './Home.jsx'
-
-export default function App() {
-  return (
-    <Home
-      explorersThisWeek={286}
-      onStart={({ phone, gameCode }) => {
-        console.log(phone, gameCode) // replace with navigation to the game page
-      }}
-    />
-  )
-}
+// Share the hunt navigation used by the nested frontend.
+export { default } from '../my-react-app/src/App.jsx'
