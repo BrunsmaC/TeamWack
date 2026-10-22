@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Home.css";
+import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 
 /* ---------- small icons ---------- */
 const Arrow = ({ size = 20 }) => (
@@ -135,9 +136,19 @@ export default function Home({ explorersThisWeek, onStart }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!phone.trim()) {
+      setError("Enter a phone number to join.");
+      return;
+    }
+
     const code = gameCode.trim();
     if (!code) {
       setError("Enter a game code to join.");
+      return;
+    }
+
+    if (code !== HUNT_CODE) {
+      setError(INVALID_CODE_MESSAGE);
       return;
     }
 
@@ -218,7 +229,7 @@ export default function Home({ explorersThisWeek, onStart }) {
           <form id="hunt-form" className="bh-form" onSubmit={handleSubmit}>
             <label htmlFor="phone">Phone number</label>
             <input id="phone" type="tel" inputMode="tel" autoComplete="tel"
-              placeholder="Optional phone number" value={phone}
+              placeholder="(555) 123-4567" value={phone} required
               onChange={(e) => setPhone(e.target.value)} />
 
             <label htmlFor="code">Game code</label>
