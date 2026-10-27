@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 
 // Prototype answer key. Production hunts should check answers through the server API.
@@ -198,11 +198,44 @@ function TaskList({ tasks, onComplete }) {
   );
 }
 
+function CompletionModal({ huntName, completedCount }) {
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    dialog.querySelector('.completion-home').focus();
+    document.body.style.overflow = "hidden";
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
+    };
+  }, []);
+
+  return (
+    <dialog ref={dialogRef} className="completion-modal" aria-labelledby="completion-title"
+      aria-describedby="completion-description" onCancel={(event) => event.preventDefault()}>
+      <div className="completion-medal" aria-hidden="true">★</div>
+      <p className="game-kicker">Hunt complete</p>
+      <h2 id="completion-title">Congratulations!</h2>
+      <p className="completion-hunt">Congratulations for completing <strong>{huntName}</strong>!</p>
+      <p className="completion-count">All {completedCount} tasks completed.</p>
+      <p id="completion-description">Would you like to play another game?</p>
+      <a className="completion-home" href="/" autoFocus>Back to home <Arrow /></a>
+    </dialog>
+  );
+}
+
 export default function Game() {
   const initialCode = new URLSearchParams(window.location.search).get("code") ?? "";
   const [accessCode, setAccessCode] = useState(initialCode);
   const [hunt, setHunt] = useState(initialCode === HUNT_CODE ? { hunt_name: "Old Town Secrets", access_code: initialCode } : null);
   const [tasks, setTasks] = useState(() => SAMPLE_TASKS.map((task) => ({ ...task })));
+  const completedCount = tasks.filter((task) => task.completed).length;
+  const isComplete = Boolean(hunt) && tasks.length > 0 && completedCount === tasks.length;
 
   const completeTask = (taskId) => {
     setTasks((current) => current.map((task) =>
@@ -242,13 +275,14 @@ export default function Game() {
         <main className="game-main">
           <section className="game-summary">
             <div>
-              <p className="game-kicker">Active hunt</p>
+              <p className="game-kicker">{isComplete ? "Hunt complete" : "Active hunt"}</p>
               <h1>{hunt.hunt_name}</h1>
               <p>Code {hunt.access_code}</p>
             </div>
             <div className="game-progress">
-              <strong>{tasks.filter((task) => task.completed).length}</strong>
+              <strong>{completedCount}</strong>
               <span>of {tasks.length} tasks complete</span>
+              {isComplete && <span className="game-complete-status" role="status">Hunt complete!</span>}
             </div>
           </section>
 
@@ -261,6 +295,9 @@ export default function Game() {
             />
           </div>
         </main>
+      )}
+      {isComplete && (
+        <CompletionModal huntName={hunt.hunt_name} completedCount={completedCount} />
       )}
     </div>
   );
