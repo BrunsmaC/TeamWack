@@ -1,0 +1,7 @@
+services:
+  website:
+    build: ./my-react-app
+    container_name: teamwack
+    restart: unless-stopped
+    ports:
+      - "8081:80"

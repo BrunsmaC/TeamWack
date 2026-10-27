@@ -1,0 +1,54 @@
+/* Extras for the inline task list. The main task styles (.task-panel,
+   .task-item, .answer-row, …) live in Game.css. */
+
+.task-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-weight: 700;
+  font-size: .95rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.task-sort input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--navy);
+}
+
+.task-answer {
+  margin: 14px 0 0;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.task-answer span {
+  display: block;
+  margin-bottom: 4px;
+  font: 800 .75rem "Space Grotesk", sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.task-empty .task-message {
+  margin: 0;
+}
+
+.task-retry {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--navy);
+  font: 800 .95rem "DM Sans", sans-serif;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.task-panel .task-list + .task-empty,
+.task-panel .task-empty + .task-list {
+  margin-top: 14px;
+}

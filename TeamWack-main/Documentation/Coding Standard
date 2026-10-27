@@ -1,0 +1,28 @@
+Potential Stack
+
+Frontend
+React + TypeScript
+
+Commenting
+short comments
+sign off comments
+
+Backend
+Python + FastAPI
+
+Database
+MongoDB
+
+Real-time
+FastAPI WebSockets
+
+Maps / GPS
+Leaflet + OpenStreetMap
+Browser Geolocation API
+
+QR
+html5-qrcode
+
+DevOps
+Docker
+GitHub Actions
