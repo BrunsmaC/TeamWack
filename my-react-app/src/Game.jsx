@@ -7,6 +7,7 @@ const SAMPLE_TASKS = [
   { id: "garden-gate", title: "Hidden Garden Gate", description: "Look for the yellow gate and enter the flower painted above it.", acceptedAnswers: ["rose"], completed: false },
   { id: "market-motto", title: "Market Motto", description: "Read the market plaque and enter the final word.", acceptedAnswers: ["community"], completed: false },
 ];
+
 import "./Game.css";
 
 const Arrow = ({ size = 20 }) => (
@@ -154,7 +155,9 @@ function TaskList({ tasks, onComplete }) {
         <span>{tasks.filter((task) => task.completed).length}/{tasks.length} complete</span>
       </div>
       <div className="task-list">
-        {tasks.map((task, index) => (
+        {[...tasks]
+          .sort((a, b) => Number(a.completed) - Number(b.completed))
+          .map((task, index) => (
           <article className={`task-item ${task.completed ? "is-complete" : ""}`} key={task.id}>
             <div className="task-status" aria-label={task.completed ? "Completed" : "Incomplete"}>
               {task.completed ? <Check /> : index + 1}
