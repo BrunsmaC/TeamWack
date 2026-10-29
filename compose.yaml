@@ -1,7 +1,13 @@
 services:
+<<<<<<< HEAD
   api:
     build: ./server
     container_name: teamwack-api
+=======
+  website:
+    build: .
+    container_name: teamwack
+>>>>>>> origin/sprint4
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -18,3 +24,21 @@ services:
       - api
     ports:
       - "8081:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./server
+    container_name: teamwack-api
+    restart: unless-stopped
+    expose:
+      - "3001"
+    environment:
+      PORT: 3001
+      DATA_DIR: /app/data
+      NODE_ENV: production
+    volumes:
+      - backend-data:/app/data
+
+volumes:
+  backend-data:

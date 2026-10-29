@@ -5,6 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
+<<<<<<< HEAD
 COPY index.js ./
 COPY data ./data
 
@@ -15,3 +16,10 @@ ENV DATA_DIR=/app/data
 EXPOSE 3001
 
 CMD ["npm", "start"]
+=======
+COPY index.js ./index.js
+
+EXPOSE 3001
+
+CMD ["npm", "start"]
+>>>>>>> origin/sprint4
