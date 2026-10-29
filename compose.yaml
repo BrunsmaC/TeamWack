@@ -1,8 +1,24 @@
 services:
+  api:
+    build: ./server
+    container_name: teamwack-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATA_DIR: /app/data
+    volumes:
+      - ./server/data:/app/data
+
+  api-gateway:
+    build: ./my-react-app
+    container_name: teamwack-gateway
   website:
     build: .
     container_name: teamwack
     restart: unless-stopped
+    depends_on:
+      - api
     ports:
       - "8081:80"
     depends_on:

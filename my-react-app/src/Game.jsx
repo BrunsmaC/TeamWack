@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
+import { completeTask as submitTaskAnswer, fetchTasks } from "./api.js";
 
 // Prototype answer key. Production hunts should check answers through the server API.
 const SAMPLE_TASKS = [
@@ -120,8 +121,9 @@ function JoinPanel({ initialCode, onJoin, error, loading }) {
 function TaskList({ tasks, onComplete }) {
   const [answers, setAnswers] = useState({});
   const [taskMessages, setTaskMessages] = useState({});
+  const [submitting, setSubmitting] = useState({});
 
-  const submitAnswer = (event, task) => {
+  const submitAnswer = async (event, task) => {
     event.preventDefault();
     const answer = answers[task.id]?.trim();
     if (!answer) {
@@ -129,14 +131,17 @@ function TaskList({ tasks, onComplete }) {
       return;
     }
 
-    if (task.completed) return;
-    const normalize = (value) => value.trim().replace(/\s+/g, " ").toLowerCase();
-    const correct = task.acceptedAnswers.some((expected) => normalize(expected) === normalize(answer));
-    setTaskMessages((messages) => ({
-      ...messages,
-      [task.id]: correct ? "Task completed" : "Incorrect answer. Try again.",
-    }));
-    if (correct) onComplete(task.id);
+    if (task.completed || submitting[task.id]) return;
+    setSubmitting((current) => ({ ...current, [task.id]: true }));
+    setTaskMessages((messages) => ({ ...messages, [task.id]: "" }));
+    try {
+      await onComplete(task.id, answer);
+      setTaskMessages((messages) => ({ ...messages, [task.id]: "Task completed" }));
+    } catch (error) {
+      setTaskMessages((messages) => ({ ...messages, [task.id]: error.message }));
+    } finally {
+      setSubmitting((current) => ({ ...current, [task.id]: false }));
+    }
   };
 
   if (tasks.length === 0) {
@@ -183,7 +188,9 @@ function TaskList({ tasks, onComplete }) {
                         setTaskMessages((current) => ({ ...current, [task.id]: "" }));
                       }}
                     />
-                    <button type="submit">Submit</button>
+                    <button type="submit" disabled={submitting[task.id]}>
+                      {submitting[task.id] ? "Saving…" : "Submit"}
+                    </button>
                   </div>
                 </form>
               )}
@@ -201,57 +208,43 @@ function TaskList({ tasks, onComplete }) {
   );
 }
 
-function CompletionModal({ huntName, completedCount }) {
-  const dialogRef = useRef(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    const previousFocus = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    dialog.showModal();
-    dialog.querySelector('.completion-home').focus();
-    document.body.style.overflow = "hidden";
-    return () => {
-      dialog.close();
-      document.body.style.overflow = previousOverflow;
-      previousFocus?.focus();
-    };
-  }, []);
-
-  return (
-    <dialog ref={dialogRef} className="completion-modal" aria-labelledby="completion-title"
-      aria-describedby="completion-description" onCancel={(event) => event.preventDefault()}>
-      <div className="completion-medal" aria-hidden="true">★</div>
-      <p className="game-kicker">Hunt complete</p>
-      <h2 id="completion-title">Congratulations!</h2>
-      <p className="completion-hunt">Congratulations for completing <strong>{huntName}</strong>!</p>
-      <p className="completion-count">All {completedCount} tasks completed.</p>
-      <p id="completion-description">Would you like to play another game?</p>
-      <a className="completion-home" href="/" autoFocus>Back to home <Arrow /></a>
-    </dialog>
-  );
-}
-
 export default function Game() {
   const initialCode = new URLSearchParams(window.location.search).get("code") ?? "";
-  const [accessCode, setAccessCode] = useState(initialCode);
-  const [hunt, setHunt] = useState(initialCode === HUNT_CODE ? { hunt_name: "Old Town Secrets", access_code: initialCode } : null);
-  const [tasks, setTasks] = useState(() => SAMPLE_TASKS.map((task) => ({ ...task })));
-  const completedCount = tasks.filter((task) => task.completed).length;
-  const isComplete = Boolean(hunt) && tasks.length > 0 && completedCount === tasks.length;
-
-  const completeTask = (taskId) => {
-    setTasks((current) => current.map((task) =>
-      task.id === taskId ? { ...task, completed: true } : task
-    ));
-  };
+  const phone = sessionStorage.getItem("buchunt-phone") || "";
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [joined, setJoined] = useState(initialCode.toUpperCase() === HUNT_CODE && !!phone);
 
   const join = (code) => {
-    if (code !== HUNT_CODE) return;
-    setTasks(SAMPLE_TASKS.map((task) => ({ ...task })));
-    setAccessCode(code);
-    setHunt({ hunt_name: "Old Town Secrets", access_code: code });
-    window.history.replaceState({}, "", `/game?code=${encodeURIComponent(code)}`);
+    if (code.toUpperCase() !== HUNT_CODE) return;
+    window.history.replaceState({}, "", `/game?code=${encodeURIComponent(code.toUpperCase())}`);
+    setJoined(true);
+  };
+
+  useEffect(() => {
+    if (!joined) return;
+    let cancelled = false;
+    setLoading(true);
+    setError("");
+    fetchTasks(phone, HUNT_CODE)
+      .then((data) => {
+        if (!cancelled) setTasks(data.map((task) => ({ ...task, completed: task.done })));
+      })
+      .catch((requestError) => {
+        if (!cancelled) setError(requestError.message || "Could not load hunt tasks.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [joined, phone]);
+
+  const completeTask = async (taskId, answer) => {
+    const savedTask = await submitTaskAnswer(phone, HUNT_CODE, taskId, answer);
+    setTasks((current) => current.map((task) =>
+      task.id === savedTask.id ? { ...savedTask, completed: savedTask.done } : task
+    ));
   };
 
   return (
@@ -270,37 +263,35 @@ export default function Game() {
         <a href="/" className="game-home-link">Home</a>
       </header>
 
-      {!hunt && (
-        <JoinPanel initialCode={accessCode} onJoin={join} />
+      {!joined && (
+        <>
+          {phone
+            ? <JoinPanel initialCode={initialCode} onJoin={join} error={error} loading={loading} />
+            : <section className="game-entry"><p className="game-error">Please return to the welcome page and enter your phone number first.</p></section>}
+        </>
       )}
 
-      {hunt && (
+      {joined && (
         <main className="game-main">
           <section className="game-summary">
             <div>
-              <p className="game-kicker">{isComplete ? "Hunt complete" : "Active hunt"}</p>
-              <h1>{hunt.hunt_name}</h1>
-              <p>Code {hunt.access_code}</p>
+              <p className="game-kicker">Active hunt</p>
+              <h1>Old Town Secrets</h1>
+              <p>Code {HUNT_CODE}</p>
             </div>
             <div className="game-progress">
-              <strong>{completedCount}</strong>
+              <strong>{tasks.filter((task) => task.completed).length}</strong>
               <span>of {tasks.length} tasks complete</span>
-              {isComplete && <span className="game-complete-status" role="status">Hunt complete!</span>}
             </div>
           </section>
 
           <div className="game-grid">
             <MockMap tasks={tasks} />
-            <TaskList
-              key={hunt.access_code}
-              tasks={tasks}
-              onComplete={completeTask}
-            />
+            {loading && <section className="task-panel"><p>Loading saved tasks…</p></section>}
+            {!loading && error && <section className="task-panel"><p className="game-error" role="alert">{error}</p></section>}
+            {!loading && !error && <TaskList tasks={tasks} onComplete={completeTask} />}
           </div>
         </main>
-      )}
-      {isComplete && (
-        <CompletionModal huntName={hunt.hunt_name} completedCount={completedCount} />
       )}
     </div>
   );
