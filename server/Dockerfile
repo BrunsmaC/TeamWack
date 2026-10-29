@@ -15,3 +15,8 @@ ENV DATA_DIR=/app/data
 EXPOSE 3001
 
 CMD ["npm", "start"]
+COPY index.js ./index.js
+
+EXPOSE 3001
+
+CMD ["npm", "start"]

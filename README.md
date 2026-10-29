@@ -38,13 +38,18 @@ refactor: cleanup input handling
 3. Type `>Git: Clone` and select **Clone from GitHub**.
 4. Paste the link you copied from GitHub and press **Enter**.
 5. When prompted, choose a folder in your project directory to clone it into.
+## Route API requests to the backend
 
-## Running the app with Docker
+The React app uses relative `/api/...` URLs. During development, Vite forwards
+those requests to the task API at `http://localhost:3001`. In Docker Compose,
+nginx forwards `/api/...` requests to the internal `backend` service, while all
+other requests continue to serve the React app.
 
-Run `docker compose up --build` from the repository root. Open `http://localhost:8081`.
-The Nginx API gateway serves the React app and forwards `/api/` requests to the
-Express API service. The API is only exposed inside the Compose network; hunt data
-and progress are stored in `server/data` on the host. The welcome-page phone
-number identifies a player's progress; completed answers are written under
-`server/data/hunts/<GAMECODE>/progress/` and are loaded again on that player's next visit.
+Run the full stack from the project root with:
 
+```bash
+docker compose up --build
+```
+
+Open the website at `http://localhost:8081`. The API is available through the
+same origin under `/api`; its data is kept in the `backend-data` Docker volume.

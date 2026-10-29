@@ -1,3 +1,4 @@
+import { fetchTasks } from "./tasks/api.js";
 import { useState } from "react";
 import "./Home.css";
 

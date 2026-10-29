@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 import { completeTask as submitTaskAnswer, fetchTasks } from "./api.js";
+
+// Prototype answer key. Production hunts should check answers through the server API.
+const SAMPLE_TASKS = [
+  { id: "clockkeeper", title: "The Clockkeeper", description: "Find the old clock and enter the hour shown on its face.", acceptedAnswers: Array.from({ length: 12 }, (_, index) => String(index + 1)), completed: false },
+  { id: "garden-gate", title: "Hidden Garden Gate", description: "Look for the yellow gate and enter the flower painted above it.", acceptedAnswers: ["rose"], completed: false },
+  { id: "market-motto", title: "Market Motto", description: "Read the market plaque and enter the final word.", acceptedAnswers: ["community"], completed: false },
+];
+
 import "./Game.css";
 
 const Arrow = ({ size = 20 }) => (
@@ -152,7 +160,9 @@ function TaskList({ tasks, onComplete }) {
         <span>{tasks.filter((task) => task.completed).length}/{tasks.length} complete</span>
       </div>
       <div className="task-list">
-        {tasks.map((task, index) => (
+        {[...tasks]
+          .sort((a, b) => Number(a.completed) - Number(b.completed))
+          .map((task, index) => (
           <article className={`task-item ${task.completed ? "is-complete" : ""}`} key={task.id}>
             <div className="task-status" aria-label={task.completed ? "Completed" : "Incomplete"}>
               {task.completed ? <Check /> : index + 1}
