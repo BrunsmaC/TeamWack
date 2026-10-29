@@ -41,6 +41,7 @@ refactor: cleanup input handling
 ## Route API requests to the backend
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Running the app with Docker
 
 Run `docker compose up --build` from the repository root. Open `http://localhost:8081`.
@@ -51,6 +52,8 @@ number identifies a player's progress; completed answers are written under
 `server/data/hunts/<GAMECODE>/progress/` and are loaded again on that player's next visit.
 
 =======
+=======
+>>>>>>> 6aab62974f8a2ae12db30a0ca55d0a67e2943468
 The React app uses relative `/api/...` URLs. During development, Vite forwards
 those requests to the task API at `http://localhost:3001`. In Docker Compose,
 nginx forwards `/api/...` requests to the internal `backend` service, while all
@@ -64,4 +67,7 @@ docker compose up --build
 
 Open the website at `http://localhost:8081`. The API is available through the
 same origin under `/api`; its data is kept in the `backend-data` Docker volume.
+<<<<<<< HEAD
 >>>>>>> origin/sprint4
+=======
+>>>>>>> 6aab62974f8a2ae12db30a0ca55d0a67e2943468

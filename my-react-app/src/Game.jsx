@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { completeTask as submitTaskAnswer, fetchTasks } from "./api.js";
 =======
+=======
+import { completeTask as submitTaskAnswer, fetchTasks } from "./api.js";
+>>>>>>> 6aab62974f8a2ae12db30a0ca55d0a67e2943468
 
 // Prototype answer key. Production hunts should check answers through the server API.
 const SAMPLE_TASKS = [
@@ -11,7 +15,10 @@ const SAMPLE_TASKS = [
   { id: "market-motto", title: "Market Motto", description: "Read the market plaque and enter the final word.", acceptedAnswers: ["community"], completed: false },
 ];
 
+<<<<<<< HEAD
 >>>>>>> origin/sprint4
+=======
+>>>>>>> 6aab62974f8a2ae12db30a0ca55d0a67e2943468
 import "./Game.css";
 
 const Arrow = ({ size = 20 }) => (

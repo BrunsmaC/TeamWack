@@ -1,5 +1,6 @@
 services:
 <<<<<<< HEAD
+<<<<<<< HEAD
   api:
     build: ./server
     container_name: teamwack-api
@@ -8,6 +9,11 @@ services:
     build: .
     container_name: teamwack
 >>>>>>> origin/sprint4
+=======
+  api:
+    build: ./server
+    container_name: teamwack-api
+>>>>>>> 6aab62974f8a2ae12db30a0ca55d0a67e2943468
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -19,6 +25,9 @@ services:
   api-gateway:
     build: ./my-react-app
     container_name: teamwack-gateway
+  website:
+    build: .
+    container_name: teamwack
     restart: unless-stopped
     depends_on:
       - api
