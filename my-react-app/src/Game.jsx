@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 import { completeTask as submitTaskAnswer, fetchTasks } from "./api.js";
 
@@ -208,6 +208,36 @@ function TaskList({ tasks, onComplete }) {
   );
 }
 
+function CompletionModal({ taskCount }) {
+  const dialogRef = useRef(null);
+  const homeRef = useRef(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialog.showModal();
+    homeRef.current.focus();
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  return (
+    <dialog ref={dialogRef} className="completion-modal" aria-labelledby="completion-title"
+      onCancel={(event) => event.preventDefault()}>
+      <div className="completion-medal" aria-hidden="true">🏆</div>
+      <p className="game-kicker">Hunt complete</p>
+      <h2 id="completion-title">Congratulations!</h2>
+      <p className="completion-hunt">Congratulations for completing Old Town Secrets!</p>
+      <p className="completion-count">All {taskCount} tasks completed.</p>
+      <p>Would you like to play another game?</p>
+      <a ref={homeRef} href="/" className="completion-home">Back to home <Arrow /></a>
+    </dialog>
+  );
+}
+
 export default function Game() {
   const initialCode = new URLSearchParams(window.location.search).get("code") ?? "";
   const phone = sessionStorage.getItem("buchunt-phone") || "";
@@ -215,6 +245,8 @@ export default function Game() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [joined, setJoined] = useState(initialCode.toUpperCase() === HUNT_CODE && !!phone);
+  const isComplete = joined && !loading && !error && tasks.length > 0
+    && tasks.every((task) => task.completed);
 
   const join = (code) => {
     if (code.toUpperCase() !== HUNT_CODE) return;
@@ -275,7 +307,7 @@ export default function Game() {
         <main className="game-main">
           <section className="game-summary">
             <div>
-              <p className="game-kicker">Active hunt</p>
+              <p className="game-kicker">{isComplete ? "Hunt complete" : "Active hunt"}</p>
               <h1>Old Town Secrets</h1>
               <p>Code {HUNT_CODE}</p>
             </div>
@@ -293,6 +325,7 @@ export default function Game() {
           </div>
         </main>
       )}
+      {isComplete && <CompletionModal taskCount={tasks.length} />}
     </div>
   );
 }

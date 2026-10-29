@@ -13,6 +13,24 @@ async function completeHunt(page) {
 }
 
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('buchunt-phone', '5551234567'));
+  const tasks = [
+    { id: 'clockkeeper', title: 'The Clockkeeper', description: 'Find the clock.', answer: '1', done: false },
+    { id: 'garden-gate', title: 'Hidden Garden Gate', description: 'Find the flower.', answer: 'rose', done: false },
+    { id: 'market-motto', title: 'Market Motto', description: 'Find the motto.', answer: 'community', done: false },
+  ];
+  await page.route('**/api/hunts/BUC123/tasks**', async (route) => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ json: { tasks } });
+    }
+    const taskId = route.request().url().split('/').at(-2);
+    const task = tasks.find((item) => item.id === taskId);
+    if (!task || route.request().postDataJSON().text !== task.answer) {
+      return route.fulfill({ status: 400, json: { error: 'Incorrect answer. Try again.' } });
+    }
+    task.done = true;
+    return route.fulfill({ json: { task } });
+  });
   await page.goto('/game?code=BUC123');
 });
 
