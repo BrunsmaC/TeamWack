@@ -38,4 +38,18 @@ refactor: cleanup input handling
 3. Type `>Git: Clone` and select **Clone from GitHub**.
 4. Paste the link you copied from GitHub and press **Enter**.
 5. When prompted, choose a folder in your project directory to clone it into.
+## Route API requests to the backend
 
+The React app uses relative `/api/...` URLs. During development, Vite forwards
+those requests to the task API at `http://localhost:3001`. In Docker Compose,
+nginx forwards `/api/...` requests to the internal `backend` service, while all
+other requests continue to serve the React app.
+
+Run the full stack from the project root with:
+
+```bash
+docker compose up --build
+```
+
+Open the website at `http://localhost:8081`. The API is available through the
+same origin under `/api`; its data is kept in the `backend-data` Docker volume.

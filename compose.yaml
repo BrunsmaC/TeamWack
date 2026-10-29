@@ -1,7 +1,25 @@
 services:
   website:
-    build: ./my-react-app
+    build: .
     container_name: teamwack
     restart: unless-stopped
     ports:
       - "8081:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./server
+    container_name: teamwack-api
+    restart: unless-stopped
+    expose:
+      - "3001"
+    environment:
+      PORT: 3001
+      DATA_DIR: /app/data
+      NODE_ENV: production
+    volumes:
+      - backend-data:/app/data
+
+volumes:
+  backend-data:
