@@ -39,3 +39,12 @@ refactor: cleanup input handling
 4. Paste the link you copied from GitHub and press **Enter**.
 5. When prompted, choose a folder in your project directory to clone it into.
 
+## Running the app with Docker
+
+Run `docker compose up --build` from the repository root. Open `http://localhost:8081`.
+The Nginx API gateway serves the React app and forwards `/api/` requests to the
+Express API service. The API is only exposed inside the Compose network; hunt data
+and progress are stored in `server/data` on the host. The welcome-page phone
+number identifies a player's progress; completed answers are written under
+`server/data/hunts/<GAMECODE>/progress/` and are loaded again on that player's next visit.
+
