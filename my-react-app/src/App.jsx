@@ -20,7 +20,8 @@ export default function App() {
   return (
     <Home
       explorersThisWeek={286}
-      onStart={({ gameCode }) => {
+      onStart={({ phone, gameCode }) => {
+        sessionStorage.setItem('buchunt-phone', phone)
         window.history.pushState({}, '', `/game?code=${encodeURIComponent(gameCode)}`)
         setPath(window.location.pathname)
       }}

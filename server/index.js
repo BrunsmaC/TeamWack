@@ -22,15 +22,13 @@ const DATA_DIR = path.resolve(process.env.DATA_DIR || "./data");
 const MAX_TEXT = 500;
 
 /* ---------- identity ---------- */
-// TODO: replace with your team's real session/login middleware.
-// It only needs to set req.user = { phone: "<the logged-in user's phone>" }.
+// The welcome page asks players for their phone number and sends it as their
+// progress identity. Normalize it before using it as a progress-file name.
 function requireUser(req, res, next) {
-  const raw =
-    req.user?.phone ||
-    (process.env.NODE_ENV !== "production" ? req.get("x-user-phone") : null);
+  const raw = req.user?.phone || req.get("x-user-phone");
   const phone = String(raw || "").replace(/\D/g, "");
   if (phone.length < 7 || phone.length > 15) {
-    return res.status(401).json({ error: "Please log in." });
+    return res.status(401).json({ error: "Enter a valid phone number on the welcome page." });
   }
   req.phone = phone;
   next();
