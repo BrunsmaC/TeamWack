@@ -1,1 +1,12 @@
+name: Team Wack CI
 
+on:
+  push:
+    branches:
+      - feature/Auto-Doc-Deploy
+
+  pull_request:
+    branches:
+      - dev-s5
+      - sprint5
+      - main
