@@ -22,3 +22,12 @@ jobs:
 
       - name: Install application dependencies
         run: npm ci
+
+           # CI-3: Automated backend tests
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run automated backend tests
+        working-directory: ./server
+        run: npm test
