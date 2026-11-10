@@ -1,11 +1,16 @@
+
 {
   "name": "buchunt-server",
   "private": true,
   "type": "module",
-  "scripts": { "start": "node index.js" },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test tests/*.test.js"
+  },
   "dependencies": {
     "csv-parse": "^5.5.6",
     "csv-stringify": "^6.5.2",
     "express": "^4.19.2"
   }
 }
+
