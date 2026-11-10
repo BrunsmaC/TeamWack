@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality-gates:
+    name: Quality gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install application dependencies
+        run: npm ci
+
+           # CI-3: Automated backend tests
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run automated backend tests
+        working-directory: ./server
+        run: npm test
