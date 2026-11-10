@@ -15,8 +15,8 @@ jobs:
       matrix:
         include:
           - image: teamwack-website
-            context: .
-            dockerfile: ./Dockerfile
+            context: ./my-react-app
+            dockerfile: ./my-react-app/Dockerfile
           - image: teamwack-api
             context: ./server
             dockerfile: ./server/Dockerfile
