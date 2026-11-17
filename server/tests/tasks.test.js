@@ -154,4 +154,32 @@ test("Sprint 3 - Hunt Task Storage Tests", async (t) => {
       assert.equal("answer" in task, false);
     }
   });
+  await t.test("Coordinates are public, validated, and retained after completion", async () => {
+    const folder = path.join(dataDir, "hunts", "MAP");
+    await fs.mkdir(folder, { recursive: true });
+    await fs.writeFile(path.join(folder, "tasks.csv"), [
+      "id,title,description,answer,location,latitude,longitude",
+      "1,Clock,Find it,yes,Clock Tower,36.303800,-82.367683",
+      "2,Missing,No location,yes,,,",
+      "3,Invalid,Out of range,yes,Invalid,91,181",
+      "4,Origin,Valid zero,yes,Origin,0,0",
+    ].join("\n"));
+    const response = await getTasks("MAP");
+    const { tasks } = await response.json();
+    assert.deepEqual(tasks[0].location, {
+      name: "Clock Tower", latitude: 36.3038, longitude: -82.367683,
+    });
+    assert.equal(tasks[1].location, null);
+    assert.equal(tasks[2].location, null);
+    assert.deepEqual(tasks[3].location, { name: "Origin", latitude: 0, longitude: 0 });
+    assert.equal("answer" in tasks[0], false);
+    const saved = await fetch(`http://127.0.0.1:${port}/api/hunts/MAP/tasks/1/complete`, {
+      method: "POST", headers: { "x-user-phone": "4235551234", "Content-Type": "application/json" },
+      body: JSON.stringify({ text: "yes" }),
+    });
+    const { task } = await saved.json();
+    assert.equal(task.done, true);
+    assert.deepEqual(task.location, tasks[0].location);
+  });
+
 });

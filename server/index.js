@@ -61,6 +61,15 @@ async function readIfExists(file) {
   }
 }
 
+function taskLocation(row) {
+  if (!row.latitude?.trim() || !row.longitude?.trim()) return null;
+  const latitude = Number(row.latitude);
+  const longitude = Number(row.longitude);
+  if (!Number.isFinite(latitude) || Math.abs(latitude) > 90
+    || !Number.isFinite(longitude) || Math.abs(longitude) > 180) return null;
+  return { latitude, longitude, name: row.location || "" };
+}
+
 async function loadTasks(code) {
   const text = await readIfExists(tasksFile(code));
   if (text == null) return null;
@@ -69,6 +78,7 @@ async function loadTasks(code) {
       id: Number(r.id),
       title: r.title,
       description: r.description || "",
+      location: taskLocation(r),
       answer: (r.answer || "").trim(),
     })
   );
@@ -98,6 +108,7 @@ const publicTask = (t, p) => ({
   id: t.id,
   title: t.title,
   description: t.description,
+  location: t.location,
   done: !!p,
   submittedText: p?.text ?? null,
   completedAt: p?.completedAt ?? null,

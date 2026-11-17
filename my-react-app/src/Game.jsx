@@ -2,14 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 import { completeTask as submitTaskAnswer, fetchTasks } from "./api.js";
 
-// Prototype answer key. Production hunts should check answers through the server API.
-const SAMPLE_TASKS = [
-  { id: "clockkeeper", title: "The Clockkeeper", description: "Find the old clock and enter the hour shown on its face.", acceptedAnswers: Array.from({ length: 12 }, (_, index) => String(index + 1)), completed: false },
-  { id: "garden-gate", title: "Hidden Garden Gate", description: "Look for the yellow gate and enter the flower painted above it.", acceptedAnswers: ["rose"], completed: false },
-  { id: "market-motto", title: "Market Motto", description: "Read the market plaque and enter the final word.", acceptedAnswers: ["community"], completed: false },
-];
-
 import "./Game.css";
+import HuntMap from "./HuntMap.jsx";
 
 const Arrow = ({ size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -31,47 +25,6 @@ const X = () => (
     <path d="M18 6 6 18M6 6l12 12" />
   </svg>
 );
-
-function MockMap({ tasks }) {
-  const visibleTasks = tasks.length > 0 ? tasks : [
-    { id: "empty-1", title: "Start", completed: false },
-    { id: "empty-2", title: "Next stop", completed: false },
-  ];
-
-  return (
-    <section className="game-map" aria-label="Hunt map">
-      <div className="game-map-paper">
-        <svg viewBox="0 0 720 520" role="img" aria-label="Mock map with hunt stops">
-          <rect width="720" height="520" fill="#f6efe0" />
-          <path d="M0 120H720M0 250H720M0 390H720M120 0V520M300 0V520M520 0V520"
-            stroke="#d8ceb8" strokeWidth="2" />
-          <path d="M70 465C180 390 185 285 300 260C430 232 455 120 640 82"
-            fill="none" stroke="#16244a" strokeWidth="26" strokeLinecap="round" />
-          <path d="M70 465C180 390 185 285 300 260C430 232 455 120 640 82"
-            fill="none" stroke="#f5c84c" strokeWidth="6" strokeLinecap="round" strokeDasharray="12 18" />
-          {visibleTasks.slice(0, 5).map((task, index) => {
-            const points = [
-              [88, 448],
-              [235, 318],
-              [354, 244],
-              [476, 150],
-              [632, 86],
-            ];
-            const [x, y] = points[index];
-            return (
-              <g key={task.id} transform={`translate(${x} ${y})`}>
-                <circle r="25" fill={task.completed ? "#2f8f61" : "#f5c84c"} stroke="#16244a" strokeWidth="4" />
-                <text y="6" textAnchor="middle" fontSize="18" fontWeight="800" fill="#16244a">
-                  {index + 1}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-    </section>
-  );
-}
 
 function JoinPanel({ initialCode, onJoin, error, loading }) {
   const [accessCode, setAccessCode] = useState(initialCode);
@@ -162,10 +115,10 @@ function TaskList({ tasks, onComplete }) {
       <div className="task-list">
         {[...tasks]
           .sort((a, b) => Number(a.completed) - Number(b.completed))
-          .map((task, index) => (
+          .map((task) => (
           <article className={`task-item ${task.completed ? "is-complete" : ""}`} key={task.id}>
             <div className="task-status" aria-label={task.completed ? "Completed" : "Incomplete"}>
-              {task.completed ? <Check /> : index + 1}
+              {task.completed ? <Check /> : tasks.findIndex((item) => item.id === task.id) + 1}
             </div>
             <div className="task-body">
               <div className="task-title-row">
@@ -318,7 +271,7 @@ export default function Game() {
           </section>
 
           <div className="game-grid">
-            <MockMap tasks={tasks} />
+            <HuntMap tasks={tasks} />
             {loading && <section className="task-panel"><p>Loading saved tasks…</p></section>}
             {!loading && error && <section className="task-panel"><p className="game-error" role="alert">{error}</p></section>}
             {!loading && !error && <TaskList tasks={tasks} onComplete={completeTask} />}
