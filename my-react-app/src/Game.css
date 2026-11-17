@@ -183,19 +183,6 @@
   min-width: 0;
 }
 
-.game-map-paper {
-  background: #fff;
-  border: 2px solid var(--navy);
-  box-shadow: 8px 8px 0 var(--navy);
-  transform: rotate(-1deg);
-}
-
-.game-map svg {
-  display: block;
-  width: 100%;
-  min-height: 360px;
-}
-
 .task-panel {
   min-width: 0;
 }

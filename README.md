@@ -39,3 +39,20 @@ refactor: cleanup input handling
 4. Paste the link you copied from GitHub and press **Enter**.
 5. When prompted, choose a folder in your project directory to clone it into.
 
+
+## Game map
+
+The game uses Leaflet with OpenStreetMap tiles. Select **Enable location** and allow
+browser location access to show a live blue marker and GPS accuracy circle.
+Use HTTPS (or localhost) for geolocation. **Find me** resumes following the player;
+**Show tasks** fits all stops; **Stop tracking** ends the location watch.
+
+Hunt CSV columns `location,latitude,longitude` define the landmark name and coordinates.
+The API returns them as `location: { name, latitude, longitude }`; missing or invalid
+coordinates return `null` and are not plotted. Task numbers match the list even when
+completed tasks move to the bottom. Green markers identify completed tasks.
+The BUC123 coordinates are the supplied ETSU/Founders Park locations. Clue answers
+are existing prototype answers and should be verified against the real landmarks.
+Location stays in the browser; it is not sent to the task API. Map tiles need internet.
+
+Run `npx playwright install chromium` once before `npm run test:completion`.

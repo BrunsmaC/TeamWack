@@ -1,0 +1,14 @@
+﻿.hunt-map { border: 2px solid var(--navy); background: #fff; box-shadow: 6px 6px 0 var(--navy); }
+.hunt-map-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; }
+.hunt-map-toolbar h2 { margin: 0; font: 800 1.5rem 'Bricolage Grotesque', sans-serif; }
+.hunt-map-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.hunt-map-actions button { padding: 10px 12px; border: 1px solid var(--navy); background: var(--yellow); color: var(--navy); font: inherit; font-weight: 700; cursor: pointer; }
+.hunt-map-actions button:disabled { opacity: .5; cursor: default; }
+.hunt-map-actions button:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
+.hunt-map-canvas { height: clamp(320px, 55vh, 520px); width: 100%; z-index: 0; font-family: inherit; }
+.hunt-map-caption { padding: 12px 16px; color: var(--ink-soft); font-size: .85rem; line-height: 1.5; }
+.hunt-map-caption p { margin: 4px 0; }
+.hunt-stop { display: grid; place-items: center; border: 3px solid #16244a; border-radius: 50%; background: #f5c84c; color: #16244a; font: 900 15px system-ui, sans-serif; box-sizing: border-box; }
+.hunt-stop-complete { background: #2f8f61; color: #fff; }
+/* Keep Leaflet vector layers at their native size. */
+.game-map .leaflet-overlay-pane svg { min-height: 0; }
