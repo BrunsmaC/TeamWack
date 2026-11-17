@@ -9,7 +9,7 @@ on:
     types:
       - completed
     branches:
-      - sprint7
+      - main
 
 permissions:
   contents: read
