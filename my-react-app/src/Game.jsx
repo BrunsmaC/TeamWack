@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 import { completeTask as submitTaskAnswer, fetchTasks } from "./api.js";
 
@@ -197,6 +197,8 @@ export default function Game() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState("");
   const [joined, setJoined] = useState(initialCode.toUpperCase() === HUNT_CODE && !!phone);
   const isComplete = joined && !loading && !error && tasks.length > 0
     && tasks.every((task) => task.completed);
@@ -206,6 +208,25 @@ export default function Game() {
     window.history.replaceState({}, "", `/game?code=${encodeURIComponent(code.toUpperCase())}`);
     setJoined(true);
   };
+
+  // DEV-009b: Refresh the displayed progress without reloading the page.
+  const refreshProgress = useCallback(async () => {
+    if (!joined || !phone) return;
+
+    setRefreshing(true);
+    setRefreshMessage("");
+
+    try {
+      const data = await fetchTasks(phone, HUNT_CODE);
+      setTasks(data.map((task) => ({ ...task, completed: task.done })));
+      setError("");
+      setRefreshMessage("Progress updated.");
+    } catch (requestError) {
+      setRefreshMessage(requestError.message || "Could not refresh progress.");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [joined, phone]);
 
   useEffect(() => {
     if (!joined) return;
@@ -267,6 +288,19 @@ export default function Game() {
             <div className="game-progress">
               <strong>{tasks.filter((task) => task.completed).length}</strong>
               <span>of {tasks.length} tasks complete</span>
+              <button
+                type="button"
+                className="refresh-progress-btn"
+                onClick={refreshProgress}
+                disabled={refreshing || loading}
+              >
+                {refreshing ? "Refreshing..." : "Refresh Progress"}
+              </button>
+              {refreshMessage && (
+                <span role="status" className="refresh-progress-message">
+                  {refreshMessage}
+                </span>
+              )}
             </div>
           </section>
 
