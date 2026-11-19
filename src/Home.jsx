@@ -1,5 +1,7 @@
+
 import { useState } from "react";
 import "./Home.css";
+import { HUNT_CODE, INVALID_CODE_MESSAGE } from "./huntCode.js";
 
 /* ---------- small icons ---------- */
 const Arrow = ({ size = 20 }) => (
@@ -16,7 +18,7 @@ const Pin = ({ x, y, fill, stroke, children }) => (
       fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round"
     />
     <g transform="translate(0 -40)" fill="none" stroke={stroke === "#16244a" && fill === "#16244a" ? "#fff" : "#16244a"}
-       strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       {children}
     </g>
   </g>
@@ -26,6 +28,7 @@ const Pin = ({ x, y, fill, stroke, children }) => (
 function MapIllustration() {
   const navy = "#16244a";
   const yellow = "#f5c84c";
+
   return (
     <div className="map-stage" aria-hidden="true">
       <div className="map-sun" />
@@ -36,10 +39,10 @@ function MapIllustration() {
               <path d="M64 0H0V64" fill="none" stroke="#d8cdaa" strokeWidth="1.5" />
             </pattern>
           </defs>
+
           <rect width="660" height="700" fill="#efe7d0" />
           <rect width="660" height="700" fill="url(#grid)" />
 
-          {/* roads: cream casing, navy centre */}
           {[
             "M160 0 L420 700",
             "M-10 395 L665 30",
@@ -51,15 +54,14 @@ function MapIllustration() {
             </g>
           ))}
 
-          {/* route */}
           <path
             d="M125 560 C190 530 215 470 195 400 C175 340 150 330 195 250 C225 195 270 195 300 205"
             fill="none" stroke={yellow} strokeWidth="6" strokeLinecap="round" strokeDasharray="4 18"
           />
+
           <path d="M470 160 C455 150 470 140 480 140" fill="none" stroke={yellow}
             strokeWidth="6" strokeLinecap="round" strokeDasharray="4 14" />
 
-          {/* district labels */}
           <g fontFamily="Space Grotesk, sans-serif" fontWeight="700" fill={navy} letterSpacing="3.5">
             <text x="285" y="318" fontSize="17">MARKET</text>
             <text x="285" y="342" fontSize="17">SQUARE</text>
@@ -67,7 +69,6 @@ function MapIllustration() {
             <text x="72" y="672" fontSize="14">START</text>
           </g>
 
-          {/* hidden garden card */}
           <g transform="rotate(3 537 236)">
             <rect x="445" y="168" width="185" height="135" fill={yellow} stroke={navy} strokeWidth="2" />
             {[490, 537, 584].map((cx) => (
@@ -77,14 +78,15 @@ function MapIllustration() {
               fontFamily="Space Grotesk, sans-serif" letterSpacing="1.5" fill={navy}>HIDDEN GARDEN</text>
           </g>
 
-          {/* pins */}
           <Pin x="485" y="155" fill={navy} stroke={navy}>
             <rect x="-13" y="-8" width="26" height="19" rx="3" />
             <circle cx="0" cy="2" r="5" />
           </Pin>
+
           <Pin x="125" y="598" fill={yellow} stroke={navy}>
             <path d="M-8 -12V13M-8 -12H10L5 -5L10 2H-8" />
           </Pin>
+
           <Pin x="522" y="631" fill={yellow} stroke={navy}>
             <circle cx="0" cy="0" r="10" />
             <circle cx="0" cy="0" r="3" />
@@ -121,19 +123,98 @@ function MapIllustration() {
 }
 
 /* ---------- page ---------- */
-/**
- * Props
- *  - explorersThisWeek: number | undefined  → fills the "joined this week" spot (hidden when undefined)
- *  - onStart({ phone, gameCode }): called on submit — wire this to your router / API
- */
 export default function Home({ explorersThisWeek, onStart }) {
   const [phone, setPhone] = useState("");
   const [gameCode, setGameCode] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [teamMode, setTeamMode] = useState("join");
+  const [teamName, setTeamName] = useState("");
+  const [teamCode, setTeamCode] = useState("");
+  const [teamMessage, setTeamMessage] = useState("");
+  const [teamLoading, setTeamLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onStart?.({ phone: phone.trim(), gameCode: gameCode.trim() });
+    setTeamMessage("");
+
+    if (!phone.trim()) {
+      setTeamMessage("Enter a phone number to continue.");
+      return;
+    }
+
+    setTeamLoading(true);
+
+    try {
+      let response;
+
+      if (teamMode === "create") {
+        const code = gameCode.trim();
+
+        if (!code) {
+          throw new Error("Enter a game code to create a team.");
+        }
+
+        if (code !== HUNT_CODE) {
+          throw new Error(INVALID_CODE_MESSAGE);
+        }
+
+        if (!teamName.trim()) {
+          throw new Error("Enter a team name.");
+        }
+
+        response = await fetch("http://localhost:3001/api/teams", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: teamName.trim(),
+            huntCode: code,
+            createdBy: phone.trim(),
+          }),
+        });
+      } else {
+        if (!teamCode.trim()) {
+          throw new Error("Enter your team invitation code.");
+        }
+
+        response = await fetch("http://localhost:3001/api/teams/join", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-user-phone": phone.trim(),
+          },
+          body: JSON.stringify({
+            code: teamCode.trim(),
+          }),
+        });
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Something went wrong.");
+      }
+
+      if (teamMode === "create") {
+        setTeamMessage(
+          `Team created! Your invitation code is ${data.team.code}. Share this code with your teammates.`
+        );
+      } else {
+        setTeamMessage(`Successfully joined ${data.team.name}!`);
+
+        await onStart?.({
+          phone: phone.trim(),
+          gameCode: data.team.huntCode,
+          team: data.team,
+        });
+      }
+    } catch (error) {
+      setTeamMessage(error.message || "Something went wrong.");
+    } finally {
+      setTeamLoading(false);
+    }
   };
 
   return (
@@ -150,9 +231,11 @@ export default function Home({ explorersThisWeek, onStart }) {
             </span>
             Buchunt
           </a>
+
           <a href="#hunt-form" className="btn btn-sm btn-onnavy bh-join">
             Join the hunt <Arrow size={18} />
           </a>
+
           <button
             type="button"
             className="bh-menu-btn"
@@ -166,6 +249,7 @@ export default function Home({ explorersThisWeek, onStart }) {
             </svg>
           </button>
         </div>
+
         {menuOpen && (
           <nav className="bh-menu" aria-label="Main">
             <div className="bh-container">
@@ -200,22 +284,95 @@ export default function Home({ explorersThisWeek, onStart }) {
           </p>
 
           <form id="hunt-form" className="bh-form" onSubmit={handleSubmit}>
-            <label htmlFor="phone">Enter your number to get the hunt link</label>
-            <input id="phone" type="tel" inputMode="tel" autoComplete="tel"
-              placeholder="(555) 123-4567" value={phone}
-              onChange={(e) => setPhone(e.target.value)} />
+            <label htmlFor="phone">Phone number</label>
+            <input
+              id="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="(555) 123-4567"
+              value={phone}
+              required
+              onChange={(e) => setPhone(e.target.value)}
+            />
 
-            <label htmlFor="code">Game code</label>
-            <input id="code" type="text" autoComplete="off" autoCapitalize="characters"
-              placeholder="Enter your game code" value={gameCode}
-              onChange={(e) => setGameCode(e.target.value)} />
-
-            <div className="bh-actions">
-              <button type="submit" className="btn btn-lg btn-onlight">
-                Start Hunt <Arrow />
+            <div className="team-options">
+              <button
+                type="button"
+                className={`team-option ${teamMode === "join" ? "active" : ""}`}
+                onClick={() => {
+                  setTeamMode("join");
+                  setTeamMessage("");
+                }}
+              >
+                Join Team
               </button>
 
-              {/* spot for the "explorers joined this week" count */}
+              <button
+                type="button"
+                className={`team-option ${teamMode === "create" ? "active" : ""}`}
+                onClick={() => {
+                  setTeamMode("create");
+                  setTeamMessage("");
+                }}
+              >
+                Create Team
+              </button>
+            </div>
+
+            {teamMode === "create" ? (
+              <>
+                <label htmlFor="teamName">Team name</label>
+                <input
+                  id="teamName"
+                  type="text"
+                  placeholder="Enter your team name"
+                  value={teamName}
+                  required
+                  onChange={(e) => setTeamName(e.target.value)}
+                />
+
+                <label htmlFor="gameCode">Game code</label>
+                <input
+                  id="gameCode"
+                  type="text"
+                  placeholder="Enter your game code"
+                  value={gameCode}
+                  required
+                  onChange={(e) => setGameCode(e.target.value)}
+                />
+              </>
+            ) : (
+              <>
+                <label htmlFor="teamCode">Team invitation code</label>
+                <input
+                  id="teamCode"
+                  type="text"
+                  placeholder="Enter your six-character code"
+                  value={teamCode}
+                  maxLength={6}
+                  required
+                  onChange={(e) => setTeamCode(e.target.value.toUpperCase())}
+                />
+              </>
+            )}
+
+            {teamMessage && (
+              <p className="team-message" role="status">
+                {teamMessage}
+              </p>
+            )}
+
+            <div className="bh-actions">
+              <button type="submit" className="btn btn-lg btn-onlight" disabled={teamLoading}>
+                {teamLoading
+                  ? "Please wait..."
+                  : teamMode === "create"
+                    ? "Create Team"
+                    : "Join Team"}
+                <Arrow />
+              </button>
+
               {explorersThisWeek != null && (
                 <div className="bh-proof">
                   <span className="bh-avatars" aria-hidden="true">
