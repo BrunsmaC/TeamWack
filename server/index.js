@@ -21,6 +21,21 @@ import { stringify } from "csv-stringify/sync";
 const DATA_DIR = path.resolve(process.env.DATA_DIR || "./data");
 const MAX_TEXT = 500;
 
+
+/* ---------- team codes ---------- */
+function generateTeamCode() {
+  const characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+
+  for (let i = 0; i < 6; i++) {
+    code += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
+  }
+
+  return code;
+}
+
 /* ---------- identity ---------- */
 // The welcome page asks players for their phone number and sends it as their
 // progress identity. Normalize it before using it as a progress-file name.
@@ -42,6 +57,9 @@ const huntDir = (code) => path.join(DATA_DIR, "hunts", code);
 const tasksFile = (code) => path.join(huntDir(code), "tasks.csv");
 const progressFile = (code, phone) =>
   path.join(huntDir(code), "progress", `${phone}.csv`);
+const teamsFile = () => path.join(DATA_DIR, "teams.csv");
+const teamMembersFile = () => path.join(DATA_DIR, "team-members.csv");
+
 
 /* ---------- file helpers ---------- */
 const locks = new Map(); // one write at a time per file
@@ -114,9 +132,175 @@ const publicTask = (t, p) => ({
   completedAt: p?.completedAt ?? null,
 });
 
-/* ---------- routes ---------- */
+async function saveTeam(team) {
+  const file = teamsFile();
+
+  await fs.mkdir(path.dirname(file), { recursive: true });
+
+  const existing = await readIfExists(file);
+
+  const columns = ["name", "code", "huntCode", "createdBy"];
+
+  const row = stringify(
+    [[team.name, team.code, team.huntCode, team.createdBy]]
+  );
+
+  if (!existing || !existing.trim()) {
+    const header = stringify([], {
+      header: true,
+      columns,
+    });
+
+    await fs.writeFile(file, header + row);
+  } else {
+    await fs.appendFile(
+      file,
+      (existing.endsWith("\n") ? "" : "\n") + row
+    );
+  }
+}
+
+async function saveTeamMember(teamCode, phone) {
+  const file = teamMembersFile();
+
+  await fs.mkdir(path.dirname(file), { recursive: true });
+
+  const existing = await readIfExists(file);
+
+  const row = stringify([
+    [teamCode, phone, Date.now()],
+  ]);
+
+  if (!existing || !existing.trim()) {
+    const header = stringify([], {
+      header: true,
+      columns: ["teamCode", "phone", "joinedAt"],
+    });
+
+    await fs.writeFile(file, header + row);
+  } else {
+    await fs.appendFile(
+      file,
+      (existing.endsWith("\n") ? "" : "\n") + row
+    );
+  }
+}
+
 const app = express();
 app.use(express.json({ limit: "10kb" }));
+
+/* ---------- routes ---------- */
+// Join an existing team using its invitation code
+app.post("/api/teams/join", requireUser, async (req, res, next) => {
+  try {
+    const code = String(req.body?.code || "").trim().toUpperCase();
+
+    if (!/^[A-HJ-NP-Z2-9]{6}$/.test(code)) {
+      return res.status(400).json({
+        error: "Enter a valid six-character team code.",
+      });
+    }
+
+    const teamsText = await readIfExists(teamsFile());
+
+    if (!teamsText) {
+      return res.status(404).json({
+        error: "Team not found.",
+      });
+    }
+
+    const teams = parse(teamsText, {
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+    });
+
+    const team = teams.find((t) => t.code === code);
+
+    if (!team) {
+      return res.status(404).json({
+        error: "Team not found. Check your invitation code.",
+      });
+    }
+
+    const membersText = await readIfExists(teamMembersFile());
+
+    const members = membersText
+      ? parse(membersText, {
+          columns: true,
+          skip_empty_lines: true,
+          trim: true,
+        })
+      : [];
+
+    const alreadyJoined = members.some(
+      (member) => member.phone === req.phone
+    );
+
+    if (alreadyJoined) {
+      return res.status(409).json({
+        error: "You have already joined a team.",
+      });
+    }
+
+    await saveTeamMember(code, req.phone);
+
+    res.status(200).json({
+      message: "Successfully joined the team!",
+      team: {
+        name: team.name,
+        code: team.code,
+        huntCode: team.huntCode,
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+// Create a team and generate its invitation code
+app.post("/api/teams", async (req, res, next) => {
+  try {
+    const name = String(req.body?.name || "").trim();
+    const huntCode = cleanCode(req.body?.huntCode);
+    const createdBy = String(req.body?.createdBy || "").trim();
+
+    if (!name || !huntCode || !createdBy) {
+      return res.status(400).json({
+        error: "Team name, hunt code, and creator are required.",
+      });
+    }
+
+    const tasks = await loadTasks(huntCode);
+
+    if (!tasks) {
+      return res.status(404).json({
+        error: "Hunt not found.",
+      });
+    }
+
+    let code;
+
+    do {
+      code = generateTeamCode();
+    } while (
+      (await readIfExists(teamsFile()) || "").includes(`,${code},`)
+    );
+
+    const team = {
+      name,
+      code,
+      huntCode,
+      createdBy,
+    };
+
+    await saveTeam(team);
+
+    res.status(201).json({ team });
+  } catch (e) {
+    next(e);
+  }
+});
 
 // All tasks for a hunt + this user's status on each
 app.get("/api/hunts/:code/tasks", requireUser, async (req, res, next) => {

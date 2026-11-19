@@ -204,3 +204,63 @@ body { margin: 0; }
   .map-sun { width: 160px; height: 160px; right: -24px; }
   .clue-card { left: 8%; padding: 14px 16px; }
 }
+
+
+/* ---------- team selection ---------- */
+.team-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 8px 0 22px;
+}
+
+.team-option {
+  padding: 15px 12px;
+  border: 2px solid var(--navy);
+  background: #fff;
+  color: var(--navy);
+  font: 700 1rem "Space Grotesk", sans-serif;
+  cursor: pointer;
+  transition: background .15s, color .15s, transform .15s;
+}
+
+.team-option:hover {
+  transform: translateY(-2px);
+}
+
+.team-option.active {
+  background: var(--navy);
+  color: #fff;
+  box-shadow: 4px 4px 0 var(--yellow);
+}
+
+/* ---------- team messages ---------- */
+.team-message {
+  margin: 8px 0 18px;
+  padding: 14px 16px;
+  border: 2px solid var(--navy);
+  background: #fff;
+  color: var(--navy);
+  font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- loading button ---------- */
+.bh-actions .btn:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 6px 6px 0 var(--navy);
+}
+
+@media (max-width: 520px) {
+  .team-options {
+    gap: 8px;
+  }
+
+  .team-option {
+    padding: 13px 8px;
+    font-size: .9rem;
+  }
+}
