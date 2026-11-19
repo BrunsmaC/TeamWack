@@ -1,5 +1,5 @@
-id,title,description,answer
-1,The Clockkeeper,"Find the clock in Market Square. What time is painted on its face?",3:00
-2,Hidden Garden,"Behind the old bookshop is a garden. Name the flower on the gate.",rose
-3,Old Town Plaque,"Read the plaque on the oldest building. What year was it founded?",1887
-4,Team photo,"Describe the pose your team struck in front of the fountain.",
+id,title,description,answer,location,latitude,longitude
+1,The Clockkeeper,Find the ETSU Carillon Clock Tower. What time is painted on its face?,3:00,ETSU Carillon Clock Tower,36.303800,-82.367683
+2,Hidden Garden,Visit Founders Park. Name the flower on the garden gate.,rose,Founders Park,36.314000,-82.355000
+3,Old Town Plaque,Read the Borchuck Plaza Historical Marker. What year was it founded?,1887,Borchuck Plaza Historical Marker,36.302733,-82.366250
+4,Team photo,Describe the pose your team struck at ETSU NPHC Plaza.,,ETSU NPHC Plaza,36.303800,-82.365150
